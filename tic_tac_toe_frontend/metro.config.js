@@ -2,18 +2,22 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
-// Add CORS headers for remote development access
 config.server = {
   ...config.server,
   enhanceMiddleware: (middleware) => {
     return (req, res, next) => {
-      // Allow all origins for development
+      // CORS headers
       res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD, PUT, DELETE');
       res.setHeader('Access-Control-Allow-Headers', '*');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
       
-      // Handle preflight requests
-      if (req.method === 'OPTIONS') {
+      // Iframe embedding headers
+      res.setHeader('X-Frame-Options', 'ALLOWALL');
+      res.setHeader('Content-Security-Policy', "frame-ancestors *");
+      
+      // Handle preflight
+      if (req.method === 'OPTIONS' || req.method === 'HEAD') {
         res.statusCode = 200;
         res.end();
         return;
